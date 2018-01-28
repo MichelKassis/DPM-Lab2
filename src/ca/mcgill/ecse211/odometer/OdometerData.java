@@ -92,9 +92,9 @@ public class OdometerData {
         // than simple busy wait.
       }
 
-      position[0] = x;
-      position[1] = y;
-      position[2] = theta;
+      position[0] = this.x;
+      position[1] = this.y;
+      position[2] = this.theta;
 
     } catch (InterruptedException e) {
       // Print exception to screen
@@ -102,9 +102,7 @@ public class OdometerData {
     } finally {
       lock.unlock();
     }
-
     return position;
-
   }
 
   /**
@@ -119,14 +117,14 @@ public class OdometerData {
     lock.lock();
     isReseting = true;
     try {
-      x += dx;
-      y += dy;
-      theta = (theta + (360 + dtheta) % 360) % 360; // keeps the updates
+      this.x += dx;
+      this.y += dy;
+      this.theta = (theta + (360 + dtheta) % 360) % 360; // keeps the updates
                                                     // within 360
                                                     // degrees
       isReseting = false; // Done reseting
       doneReseting.signalAll(); // Let the other threads know that you are
-                                // done reseting
+      									// done reseting
     } finally {
       lock.unlock();
     }

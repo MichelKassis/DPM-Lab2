@@ -84,7 +84,6 @@ public class Odometer extends OdometerData implements Runnable {
 
     if (odo == null) {
       throw new OdometerExceptions("No previous Odometer exits.");
-
     }
     return odo;
   }
@@ -105,8 +104,14 @@ public class Odometer extends OdometerData implements Runnable {
 
       // TODO Calculate new robot position based on tachometer counts
       
-      // TODO Update odometer values with new calculated values
-      odo.update(0.5, 1.8, 20.1);
+      double distL, distR, deltaD, theta, dx, dy;
+      distL = Math.PI * this.WHEEL_RAD * leftMotorTachoCount/180.0;
+      distR = Math.PI * this.WHEEL_RAD * rightMotorTachoCount/180.0;
+      deltaD = 0.5 * (distL + distR);
+      theta = (leftMotorTachoCount - rightMotorTachoCount)/this.TRACK;
+      dx = deltaD + Math.sin(theta);
+      dy = deltaD + Math.cos(theta);
+      odo.update(dx, dy, theta);
 
       // this ensures that the odometer only runs once every period
       updateEnd = System.currentTimeMillis();
