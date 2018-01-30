@@ -53,20 +53,17 @@ public class OdometryCorrection implements Runnable {
 		    		yCounter++;
 		    		odometer.setY(yCounter*widthOftheTile);
 		    	  }	 
-		    	  else if(theta >= 170 && theta <185){
-			    		 
+		    	  else if(theta >= 170 && theta <185){		    		 
 			     odometer.setY(yCounter*widthOftheTile);
 			      yCounter--;
 			  }	
 		    	  else if(theta >= 80 && theta < 95){
 		    		 xCounter++;
-		    		 odometer.setX(xCounter*widthOftheTile);
-		    		  
+		    		 odometer.setX(xCounter*widthOftheTile);	    		  
 		    	  }	    	      	  
 		    	  else {     		 
 		     	 odometer.setX(xCounter*widthOftheTile);
-		     	 xCounter--;
-		     		  
+		     	 xCounter--;     		  
 		     	  }
       }
       correctionEnd = System.currentTimeMillis();
