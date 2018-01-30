@@ -26,6 +26,8 @@ public class Odometer extends OdometerData implements Runnable {
   private final double WHEEL_RAD;
 
   private double[] position;
+  private double oldltacho;
+  private double oldrtacho;
 
 
   private static final long ODOMETER_PERIOD = 25; // odometer update period in ms
@@ -95,31 +97,37 @@ public class Odometer extends OdometerData implements Runnable {
   // run method (required for Thread)
   public void run() {
     long updateStart, updateEnd;
+    
+    position = new double[3];
 
     while (true) {
       updateStart = System.currentTimeMillis();
 
-      leftMotorTachoCount = leftMotor.getTachoCount();
-      rightMotorTachoCount = rightMotor.getTachoCount();
+	    leftMotorTachoCount = leftMotor.getTachoCount();
+	    rightMotorTachoCount = rightMotor.getTachoCount();
+	
+								
+		double dLeft, dRight, dTheta, dPos; //left wheel movement, right wheel movement, change in heading, and change in position
+		dLeft = WHEEL_RAD * Math.PI * (this.leftMotorTachoCount - this.oldltacho) / 180.0;
+		dRight = WHEEL_RAD * Math.PI * (this.rightMotorTachoCount - this.oldrtacho) / 180.0;
+		oldltacho = leftMotorTachoCount;
+		oldrtacho = rightMotorTachoCount;
+		dTheta = (dRight - dLeft)/TRACK;
+		dPos = (dLeft + dRight)/2;
+		position[2] = (position[2]  + dTheta) % (2*Math.PI);	//radians - wrap around
+		if(position[2]  < 0.0) position[2]  += 2*Math.PI; //No negative angles
+		position[0] += dPos*Math.sin(position[2]);
+		position[1] += dPos*Math.cos(position[2]);
+		odo.update(position[0], position[1], position[2]);
 
-      // TODO Calculate new robot position based on tachometer counts
-      
-      double distL, distR, deltaD, theta, dx, dy;
-      distL = Math.PI * this.WHEEL_RAD * leftMotorTachoCount/180.0;
-      distR = Math.PI * this.WHEEL_RAD * rightMotorTachoCount/180.0;
-      deltaD = 0.5 * (distL + distR);
-      theta = (leftMotorTachoCount - rightMotorTachoCount)/this.TRACK;
-      dx = deltaD + Math.sin(theta);
-      dy = deltaD + Math.cos(theta);
-      odo.update(dx, dy, theta);
-
+		
       // this ensures that the odometer only runs once every period
       updateEnd = System.currentTimeMillis();
       if (updateEnd - updateStart < ODOMETER_PERIOD) {
         try {
           Thread.sleep(ODOMETER_PERIOD - (updateEnd - updateStart));
         } catch (InterruptedException e) {
-          // there is nothing to be done
+          // there is nothing to be done\
         }
       }
     }
