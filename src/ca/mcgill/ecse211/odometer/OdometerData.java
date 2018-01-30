@@ -206,5 +206,12 @@ public class OdometerData {
       lock.unlock();
     }
   }
+  public double getTheta() {
+	  double result;
+	  synchronized (lock) {
+		  result = this.theta;
+	  }
+	  return result;
+  }
 
 }

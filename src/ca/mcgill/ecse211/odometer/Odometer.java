@@ -98,7 +98,7 @@ public class Odometer extends OdometerData implements Runnable {
   public void run() {
     long updateStart, updateEnd;
     
-    position = new double[3];
+    position = odo.getXYT();
 
     while (true) {
       updateStart = System.currentTimeMillis();
